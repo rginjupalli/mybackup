@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>RMEC_PaymentProcessingController</members>
+        <members>RMEC_UpgradeComponentController</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>RMEC_BillingPaymentPage</members>
+        <members>RMEC_InstancePage</members>
+        <name>ApexPage</name>
+    </types>
+    <version>38.0</version>
+</Package>

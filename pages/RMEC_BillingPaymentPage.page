@@ -1,0 +1,165 @@
+<!-- ******************************************************************************************************
+* Name: RMEC_BillingPaymentPage
+* Author: Accenture
+* Description: 
+*
+* Date                  PRJ/DFCT/ENHC#          Summary of Changes 
+* ---------------       ------------------      ----------------------------------------
+* 09 June 2015          RainMakr eCommerce      Initial Release  
+* 03 Sept 2015          RainMakr-MVP2           Enhancement
+* 15 Sep 2016           BIZ-2581                Included Optimizely script.
+* 15 Sep 2016           BIZ-2116                Replaced Google Analytics script with Google Tag Manager script.
+  *********************************************************************************************************** -->
+<apex:page showHeader="false" sidebar="false" controller="RMEC_PaymentProcessingController" standardStylesheets="false" docType="html-5.0" action="{!checkUser}" id="billingPage" >
+  <link rel="icon" type="image/png" href="{!URLFOR($Resource.RMEC_DesignResource,'/images/apple-touch-icon-57x57.png')}" />
+  <!-- Dev Team: Added controller -->
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Payment Information</title>
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/bootstrap.min.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/bootstrap-select.min.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/style_checkbox.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/splunk.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/BillingPaymentPage.css')}" />
+  <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/fonts/fonts.css')}" />
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/js.stripe.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'js/jquery.payment.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/bootstrap.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/bootstrap-select.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.validate.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.validate.bootstrap.popover.min.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/billing-payment.js')}"/>
+  <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/placeholder.js')}"/>
+  <script src="//cdn.optimizely.com/js/7177505.js"></script><!-- BIZ-2581 - Optimizely script -->
+  <style>   
+    .modal-header {
+        background-color: #f4f4f4;
+        border-bottom: 1px solid #d6d6d6;
+        padding: 22px 20px;
+    }
+    .modal-footer {
+        padding: 15px;
+        text-align: right;
+        border-top: 0px;            
+    }
+    .close {
+        float: right;
+        font-size: 28px;
+        font-weight: 700;
+        line-height: 1;
+        color: #000;
+        text-shadow: 0 1px 0 #fff;            
+        opacity: .2;
+    }
+  </style>
+  <apex:outputPanel rendered="{!(error=='NOERROR' && paymentDetail.errorMessage!='Contact Sales')}" id="noErrorPanel"> 
+    <div class="pageContainer">
+      <div class="SCheader">
+        <c:RMEC_HeaderInformationComponent ></c:RMEC_HeaderInformationComponent>
+      </div>
+      <div class="SCcontainer">
+        <c:RMEC_BillingPaymentComponent paymentDetailRecord="{!paymentDetail}" id="bPComp" />
+      </div>
+    </div>
+    <c:RMEC_FooterInformationComponent ></c:RMEC_FooterInformationComponent>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!(error=='InvalidRegion' || paymentDetail.errorMessage=='Contact Sales')}">
+    <div style="padding:20px;float:left;width:100%;">
+      <div class="alert alert-info" role="alert">
+        <apex:outputText value="{!$Label.RMEC_CONTACT_SALES_MSG_1} "/>
+        <apex:outputLink target="_blank" styleClass="alert-link"  value="{!$Label.EC_CONTACT_SALES}" >Fill out this form</apex:outputLink>
+        <apex:outputText value=" {!$Label.RMEC_CONTACT_SALES_MSG_2}"></apex:outputText>
+      </div>
+    </div>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!(error=='NoShoppingCart')}">
+    <apex:outputLabel value="NoShoppingCart"/>
+  </apex:outputPanel>
+  <apex:outputPanel rendered="{!(error=='NotValidContact')}">
+    <apex:outputLabel value="NotValidContact"/>
+  </apex:outputPanel>
+  <body>
+  <apex:form >  
+      <div style="display:none;" id="poDiv">                 
+            <div class="modal fade" id="myModalpop" tabindex="-1" role="dialog" aria-labelledby="ModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title" id="ModalLabel"><b>Before you Buy </b></h4>
+                        </div>
+                        <div class="modal-body">
+                           
+                           <p style="padding-bottom:10px;"> We noticed that you already have {!instanceCount} existing Splunk <br/>
+                           <apex:outputText rendered="{!instanceCount =1}">Instance.</apex:outputText><apex:outputText rendered="{!instanceCount >1}">Instance(s).</apex:outputText> </p>
+                           
+                           <p> Would you  like to <b>upgrade</b> an existing instances <br/>
+                           Insted of purchasing an brand new instance?</p> 
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary tertiary-btn" id="newBtn"><b>NO, CONTINUE TO BUY</b></button>
+                            <button type="button" class="btn btn-primary primary-btn" id="upgradeBtn"><b>UPGRADE</b></button>                                                                                                      
+                        </div>
+                    </div>
+                </div>
+            </div>
+         </div>
+        </apex:form>
+        <script type="text/javascript">
+            $.urlParam = function(name){
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results==null){
+                   return null;
+                }
+                else{
+                   return results[1] || 0;
+                }
+            }
+            $(window).load(function(){                 
+                var showPop='{!popUp}';
+                
+                var upgradePop=$.urlParam('showpopup');
+                if( upgradePop =='false'){  
+                    $('#myModalpop').modal('hide');
+                }
+                else if( showPop=='true'){  
+                    $('#poDiv').css('display', 'block');
+                    $('#myModalpop').modal('show');
+                }
+           });
+            
+            $("#newBtn").click(function(){   
+                $('#myModalpop').modal('hide');               
+            });
+            
+            $("#upgradeBtn").click(function(){                          
+                window.open('/customers/apex/RMEC_InstancePage?instantPage=true', '_self');
+            });
+            
+        </script>
+        </body>
+  <script>
+    <!-- SUPERTAG CODE ASYNC v2.10.4 -->
+    (function(s,d,src) {
+        var st = d.createElement(s); st.type = 'text/javascript';st.async = true;st.src = src;
+        var sc = d.getElementsByTagName(s)[0]; sc.parentNode.insertBefore(st, sc);
+    })('script', document, '//c.supert.ag/p/0002ba/supertag-async.js');
+    
+    /**Code added for the icon on title bar*/
+        $( window ).load(function() {
+            //TODO: Add The code to add link tag in the head section
+            $("head").append('<link rel="icon" type="image/png" href="{!URLFOR($Resource.RMEC_DesignResource,"/images/apple-touch-icon-57x57.png")}" />');
+        });
+  </script>
+  <!-- BIZ-2116 - Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id={!$Label.GTM_ACCOUNT_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <script>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{!$Label.GTM_ACCOUNT_ID}');
+    </script>
+  <!-- BIZ-2116 - End Google Tag Manager -->
+</apex:page>

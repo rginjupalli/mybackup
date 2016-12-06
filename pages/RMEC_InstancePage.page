@@ -1,0 +1,1818 @@
+<!-- ******************************************************************************************************
+    * Name: RMEC_InstancePage
+    * Author: Accenture
+    * Description: 
+    *
+    * Date                  PRJ/DFCT/ENHC#          Summary of Changes 
+    * ---------------       ------------------      ----------------------------------------
+    * 09 June 2015          RainMakr eCommerce      Initial Release
+    * 07 July 2015          RMEC2                   Enhancements
+    * 24 Mar 2016       ES Sandbox          BIZ-1524 - Handling preview instances
+*********************************************************************************************************** -->
+<apex:page controller="RMECInstancePageController" standardStylesheets="false" showHeader="false" id="instancesPage" >
+    <link rel="icon" type="image/png" href="{!URLFOR($Resource.RMEC_DesignResource,'/images/apple-touch-icon-57x57.png')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/bootstrap.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/bootstrap.min.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/bootstrap.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/splunk.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/instances.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/fonts/fonts.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/style_checkbox.css')}" />
+    <apex:stylesheet value="{!URLFOR($Resource.RMEC_DesignResource,'/css/InstancePage.css')}" />
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.validate.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/comman2.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/jquery.validate.bootstrap.popover.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/common3.js')}"/>
+    <!-- <apex:includeScript value="{!URLFOR($Resource.TrialResource,'/js/myCommon4.js')}"/> -->
+    <apex:includeScript value="{!URLFOR($Resource.RMEC_DesignResource,'/js/myCommon4.js')}"/>
+    <title>Splunk</title>
+    <style type="text/css">
+        .responsiveLink{
+        display:none;
+        }
+        @media only screen and (max-width: 1280px),(min-device-width:1024px) and (max-device-width:1280px){
+        .trial-icon{
+        margin:-40px 0 0 200px;
+        }
+        }
+        @media screen and (min-device-width: 1024px) and (max-device-width: 4000px) { 
+        .renewSubscriptionBtn{
+        margin-top: -12px;
+        }
+        }
+        @media only screen and (max-width: 1024px),(min-device-width: 768px) and (max-device-width: 1024px)  {
+        .responsiveTbl thead, tbody, th, td, tr { 
+        display: block;
+        }
+        .responsiveTbl thead tr{ 
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+        }
+        colgroup col{
+        width:100% !important
+        }
+        .responsiveTbl tr { border: 1px solid #ccc; }
+        .responsiveTbl td { 
+        /* Behave  like a "row" */
+        width: 100% !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important; 
+        position: relative !important;
+        padding-left: 35% !important; 
+        height: 10% !important;
+        font-size:9px !important;
+        }
+        .responsiveTbl td:before{ 
+        position: absolute;
+        top: 12px;
+        left: 10px;
+        width: 20%; 
+        padding-right: 10px; 
+        white-space: nowrap;
+        }
+        button.saveButton {
+        float: none;
+        }
+        #Temp td:nth-of-type(1):before { content: "PRODUCT"; }
+        #Temp td:nth-of-type(2):before { content: "SIZES"; }
+        #Temp td:nth-of-type(3):before { content: "START DATE"; }
+        #Temp td:nth-of-type(4):before { content: "EXPIRATION DATE"; }
+        #Temp td:nth-of-type(5):before { content: "URL"; }
+        #Temp td:nth-of-type(6):before { content: ""; }
+        #Temp td:nth-of-type(7):before { content: ""; }
+        #subTable td:nth-of-type(1):before { content: "USER NAME"; }
+        #subTable td:nth-of-type(2):before { content: "EMAIL ADDRESS"; }
+        #subTable td:nth-of-type(3):before { content: "STATUS"; }
+        #subTable td:nth-of-type(4):before { content: "PRODUCT ROLES"; }
+        .responsiveImg{
+        -moz-transform:scale(0.5);
+        -webkit-transform:scale(0.5);
+        transform:scale(0.5);
+        height:20px;
+        margin-left: -30px;
+        }
+        .product-size{
+        font-size:12px;
+        }
+        .responsivePro{
+        height:20px;
+        }
+        .trial-icon{
+        margin:-15px 0 0 -15px;
+        }
+        .message-text{
+        margin-top:25%;
+        }
+        .inviteeListTh{
+        margin-top:10px;
+        top:0px;
+        }
+        .inviteeRecord{
+        margin-top:10px;
+        top:0px;
+        }
+        #subTable.responsiveTbl td:before {
+        top:15px;
+        }
+        .responsiveLink{
+        display: block;
+        color: #000;
+        position: absolute;
+        left: 10px;
+        text-decoration: underline;
+        }
+        .renewSubscriptionBtn{
+        margin-top: 0px;
+        padding: 0px 4px !important;
+        }
+        /* This CSS Properties added for the allignment of the Messages, Shown if there are no records present in the DB*/
+        .margin-top40{
+        margin-top: 102px !important;
+        }
+        .allignNoDataText, .allignNoDataText span {
+        width:150px !important;
+        position: relative !important;
+        float: right !important;
+        font-size: 14px !important;
+        }
+        } 
+        .modalPosition{
+        padding-top: 5% !important;
+        }
+        .propAlign{
+        padding-bottom: 7px !important;
+        }
+        .alignTestClass{}
+        .fontSize14{
+        font-size: 14px !important;
+        }
+        .modal-title {
+        font-weight:bold;
+        }
+        .billing-history-text {
+        font-size: 12px;
+        margin-top: 5px;
+        }
+        .clickherelink {
+        font-size: 12px;
+        font-family: "proxima nova regular","Gill Sans MT","Gill Sans",Corbel,Arial,sans-serif;
+        }
+        .pocUpgradeButton {
+            width:100px !important;
+            word-wrap: normal !important;
+            white-space: normal !important;
+            padding: 0px !important;
+        }
+        /* Added by Rishi to display horizonatl bar when page loads from popup */
+        .horizontalbar{            
+            width:100%;
+            display: none;           
+            padding: 5px;
+            margin-bottom: 5px;
+            border: 1px solid transparent;
+            border-radius: 4px;           
+            color: #31708f;
+            background-color: #d9edf7;
+            border-color: #bce8f1;
+        }  
+        .close {
+            float: right;
+            font-size: 28px;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;            
+            opacity: .2;
+        }
+    </style>
+    <script type="text/javascript">
+        function countChecked() {
+            var n = $( "input:checked" ).length;
+            if(n == 0){
+                $('[id$=roleError]').show();
+                $('[id$=saveRole]').prop('disabled', true);   
+                }else{
+                $('[id$=roleError]').hide();
+                $('[id$=saveRole]').prop('disabled', false);
+            }
+        };
+        function enableDisable(cb)
+        {
+            <!-- $("input:checkbox[id*=looped]").removeAttr('checked'); -->
+            $("input:checkbox[id$=looped]").prop('checked', false); 
+            $(cb).prop('checked', true);
+        }
+        function sendEmailRequest(){
+            if($('.text-field-error').length == 0) {                
+                $('[id$=pDiv]').show();
+                sendEmailRequestLoading();
+            }
+        }   
+        function sendInvListUpdateRequest(){       
+            $('[id$=pDiv]').show();
+            sendInvListUpdateLoading();
+        }
+        function sendInvListUpdateRequest1(){       
+            $('[id$=pDiv]').show();
+            sendInvListUpdateLoading1();
+        }
+        function sendInstRoleUpdateRequest(){
+            $('[id$=pDiv]').show();
+            $('[id$=myModal]').hide();          
+            sendInstRoleUpdateLoading();
+        }
+        function sendUpdatedName(){     
+            $('[id$=newModal]').hide();
+            $('[id$=pDiv]').show();
+            sendInstNameUpdateLoading();
+        }
+        function goToUpgrade(){
+            redirectToUpgradeFlow();
+        }
+        function showPopup() { 
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv]').show();
+        }
+        function showInitiatedPopup() { 
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv7]').show();
+        }
+        function showExpiredPopup() { 
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv8]').show();
+        }
+        function showRoleNullPopup() { 
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv3]').show();
+        }
+        function showNoInvitePopup() { 
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv4]').show();
+        }
+        function showHide(){            
+            $('[id$=alertDiv]').hide();
+            $('[id$=alertDiv2]').hide();
+            $('[id$=alertDiv3]').hide(); 
+            $('[id$=alertDiv4]').hide(); 
+            $('[id$=alertDiv5]').hide(); 
+            $('[id$=alertDiv6]').hide(); 
+            $('[id$=alertDiv7]').hide();
+            $('[id$=alertDiv8]').hide();
+            $('[id$=pDiv3]').hide(); 
+            $('[id$=pDiv4]').hide(); 
+            $('[id$=pDiv6]').hide(); 
+            $('body').css('overflow','');
+        }
+        function hideError(){
+            $('[id$=roleError]').hide();
+            $('[id$=saveRole]').prop('disabled', false);
+        }
+        function showUpgradeMsg(instId){
+            $('[id$=pDiv2]').show();
+            $('[id$=instTrial]').val(instId);
+            $('body').css('overflow','hidden');
+        }
+        function showNewUpgradeMsg(instId){     
+            $('[id$=pDiv5]').show();
+            $('[id$=instPaid]').val(instId);
+            $('body').css('overflow','hidden');
+        }       
+        function showPopupSameAddress() {
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv2]').show();
+            $('body').css('overflow','hidden');
+        }       
+        function showPopupOwnerAddress() {
+            $('[id$=pDiv]').hide();
+            $('[id$=alertDiv5]').show();
+            $('body').css('overflow','hidden');
+        } 
+        function closeUpgradeMsg(){
+            $('[id$=pDiv2]').hide();
+            $('[id$=pDiv5]').hide();
+            $('body').css('overflow','');
+        }
+        
+        function showDeleteNotificationDiv(inviteeId,username){
+            $('[id$=deleteHead]').text('Delete '+username);
+            $('[id$=pDiv3]').show();        
+            $('[id$=deleteInvId]').val(inviteeId);          
+            $('body').css('overflow','hidden');
+        }
+        function manageRoleHeaderTitle(username) {
+            $('[id$=userRoleModalLabelE]').text('Edit Roles for '+username);
+            $('[id$=userRoleModalLabelM]').text('Manage Roles for '+username);          
+        }
+        function showResentNotificationDiv(){
+            $('[id$=pDiv6]').show();
+            $('body').css('overflow','hidden');
+        }
+        function showDeleteInviteeDiv(inviteeId,userEmail){
+            $('[id$=deleteMess]').text('{!$Label.RMEC_DeleteInviteLabel1} '+userEmail+' ?');
+            $('[id$=pDiv4]').show();            
+            $('[id$=deleteInvId2]').val(inviteeId); 
+            $('body').css('overflow','hidden');
+        }
+        function deleteInviteeRecord(){
+            $('[id$=pDiv3]').hide();
+            $('[id$=pDiv4]').hide();
+            $('[id$=pDiv]').show();
+            deleteInvitee();
+        }
+        function assignValue(stackId){
+            $('[id$=stkid]').val(stackId);
+            setTimeout(function() { $('[id$=instanceCustomName]').focus(); }, 1);                
+            $('[id$=instanceCustomName]').removeClass('text-field-error');
+            $('[id$=instanceCustomName]').val('');
+            $('[id$=instanceCustomName]').next('span').text('');
+            $('[id$=new-Name-Save-button]').attr('disabled', true);
+            $('[id$=new-Name-Save-button]').removeClass('primary-btn');
+        }
+        function closeBar(){
+            $("#barDiv").hide();
+        }
+        $(document).ready(function() {
+            $('[id$=textarea]').attr('placeholder', 'hello' + '\n' + 'world');
+        }); 
+        // Code added for proper allignment of the buttons on instance page when zoom level goes beyond 150% - START
+        $( window ).load(function() {
+            
+            // added by rishi to show horizontal bar when page load from pop up
+            $.urlParam = function(name){
+                var results = new RegExp('[\?&]' + name + '=([^&#]*)').exec(window.location.href);
+                if (results==null){
+                   return null;
+                }
+                else{
+                   return results[1] || 0;
+                }
+            }
+            var displayBar=$.urlParam('instantPage');
+            if(displayBar =='true'){
+                $('#barDiv').css('display', 'block');
+                $("#barDiv").show();
+            }
+            else
+                $("#barDiv").hide();
+            // --- end ---
+            
+            $('.buy-more-splunk-btn').children().css('display','');
+            if(document.body.clientWidth > 280 && document.body.clientWidth < 900){
+                //TODO: Change the Buttons in a table - Allignment
+                $('.alignTestClass').attr('align', 'left');
+            }
+            else{
+                $('.alignTestClass').attr('align', 'middle');
+            }
+            $("head").append('<link rel="icon" type="image/png" href="{!URLFOR($Resource.RMEC_DesignResource,"/images/apple-touch-icon-57x57.png")}" />');
+        });
+        $( window ).resize(function() {
+            if(document.body.clientWidth > 280 && document.body.clientWidth < 900){
+                //TODO: Change the Buttons in a table - Allignment
+                $('.alignTestClass').attr('align', 'left');
+            }
+            else{
+                $('.alignTestClass').attr('align', 'middle');
+            }
+            if(document.body.clientWidth == 1079){
+                $('#Temp tr td:nth-child(6)').css('min-width','127px');
+            }
+        });
+        // Code added for proper allignment of the buttons on instance page when zoom level goes beyond 150% - END
+        
+        //Added for BIZ-1163 BEGIN
+        function showUnlockPopup(showButton, instId, unlock_done, unlock_total, period, endDate) {
+            console.log('showButton>>>: ' + showButton);
+            console.log('instId>>>: ' + instId);
+            var dateToConvert = new Date(endDate);
+            var monthNames = ["January", "February", "March","April", "May", "June", "July","August", "September", "October","November", "December"];
+            var dayNames = ["1st","2nd","3rd","4th","5th","6th","7th","8th","9th","10th","11th","12th","13th","14th","15th","16th","17th","18th","19th","20th","21st","22nd","23rd","24th","25th","26th","27th","28th","29th","30th","31st",]
+            var dayIndex = dateToConvert.getDate();
+            var monthIndex = dateToConvert.getMonth();
+            var year = dateToConvert.getFullYear();
+            var date = monthNames[monthIndex] + ' ' + dayNames[dayIndex - 1] + ', ' + year;
+            
+            if (unlock_done < unlock_total) {
+                showInfoPopup(instId, unlock_done, unlock_total, period);
+            } else {
+                showNoUnlocksPopup(instId, unlock_done, unlock_total, period, date);
+            }
+        }
+            
+        function showInfoPopup(instId,unlock_done,unlock_total,period){
+            var modal = $('[id$=unlock_modal]');
+            var unlock_left = unlock_total - unlock_done;
+            modal.find('.unlock_left').html(unlock_left);
+            modal.find('.unlock_total').html(unlock_total);
+            modal.find('.unlock_period').html(period);
+            modal.show();
+            $('[id$=instPaid]').val(instId);
+            $('body').css('overflow','hidden');
+        }
+
+        function showNoUnlocksPopup(instId,unlock_done,unlock_total,period,endDate){
+            var modal = $('[id$=no_unlocks_modal]');
+            modal.find('.no_unlock_period').html(period);
+            modal.find('.no_unlock_date').html(endDate);
+            modal.show();
+            $('[id$=instPaid]').val(instId);
+            $('body').css('overflow','hidden');
+        }
+        
+        function resetLicenseMethodPopup(){
+            $('[id$=unlock_modal]').hide();
+            $('[id$=pDiv]').show();
+            resetLicenseMethodCall();
+        }
+
+        function closeUnlockPopup(){
+            $('[id$=unlock_modal]').hide();
+            $('[id$=no_unlocks_modal]').hide();
+            $('body').css('overflow','');
+        }
+        //BIZ-1163 END
+    </script>
+    <!--BIZ-1163 BEGIN-->
+    <apex:outputPanel id="licenseUnlockMethod">
+        <script>
+            function showUnlockStatusPopup11(){
+                console.log('Status>>:' + "{!licenseUnlockSuccess}");
+                if("{!licenseUnlockSuccess}" == 'true'){
+                    console.log('Success');
+                    $('[id$=pDiv]').hide();
+                    $('[id$=unlock_success_modal]').show();
+                } else if("{!licenseUnlockSuccess}" == 'false'){
+                    console.log('Error');
+                    $('[id$=pDiv]').hide();
+                    $('[id$=unlock_error_modal]').show();
+                }
+            }
+        </script>
+    </apex:outputPanel>
+    <!--BIZ-1163 END-->
+    <div class="SCheader">
+        <c:RMEC_HeaderInformationComponent ></c:RMEC_HeaderInformationComponent>
+        <div class="horizontalbar" id="barDiv">
+        <button type="button" class="close" onclick="closeBar();" aria-label="Close"><span aria-hidden="true">&times;</span>
+        </button>
+        <h5 style="padding-left: 2%; padding-top:5px;"> Please select an instance for upgrade</h5>
+    </div>
+    </div>
+     
+    <apex:outputPanel rendered="{!!isDPL}" layout="none">
+        <body style="padding-top: 66px;background:#ffffff;">
+            <apex:form id="formId">
+                <apex:actionFunction name="redirectToUpgradeFlow" action="{!redirectToUpgradeFlow}"/>
+                <div class="content-container" style="padding-bottom:80px;">
+                    <div class="container">                       
+                        
+                        <div class="instance-section">
+                            <p>
+                            <!--BIZ-1511-->
+                            <span></span><b class="instance-heading instance-text"><span style="font-size:36px;">Instances</span> <a class="blue-text-link back-to-customer-portal" target="_top" href="{!$Site.Prefix}/home/home.jsp">&lt;&lt; back to {!IF(CONTAINS($Label.RMBD_ALL_PARTNER_PROFILE_IDS,$User.profileId),'partner','customer')} portal home</a></b>
+                            <span class="spanContact buy-more-splunk-btn" >
+                                <!--<apex:commandButton style="display:none;" styleClass="btn btn-primary primary-btn large" value="BUY MORE SPLUNK" action="{!buyMore}"/>-->
+                                    <!--<apex:outputLink style="display:none;" styleClass="saveButton btn btn-primary secondry-btn" value="/RMEC_PeakDailyVolumePageClone">BUY NEW CLOUD PRODUCTS</apex:outputLink>-->
+                                </span>
+                                <div class="clearfix"></div>
+                                <span class="spanContact contact-details-text" style="margin-top: -12px">To cancel your subscription plan, please cancel from Billing History page <a class="blue-text-link clickherelink" href="/customers/apex/RMEC_BillingHistoryPage">here</a>.</span>
+                                <apex:outputPanel rendered="{!isFinancialContact}">
+                                    <span class="billing-history-text" style="float: right !important;">To access billing statements, <a class="blue-text-link clickherelink" href="/customers/apex/RMEC_BillingHistoryPage">click here.</a></span>
+                                </apex:outputPanel>
+                            </p>
+                        </div>
+                        <div class="clearfix"></div>
+                        <apex:repeat id="repeat1" value="{!allInstancesTypeWrapperList}" var="oneTypeWrapperList">
+                            <div class="margin-top40">
+                                <p class="pHeadingSmall instance-heading">{!oneTypeWrapperList.instanceType}</p>
+                            </div>
+                            <div id="alertDiv" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage_Accepted" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC2_User_Already_Accepted}"></apex:outputText>
+                                            <br/>
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv2" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage2" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC_SmeToFromAddress}" ></apex:outputText>
+                                            <br/>                                                    
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv3" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage2" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC_NoRolePresentError}" ></apex:outputText>
+                                            <br/>                                                    
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv7" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage_Initiated" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC2_User_Already_Initiated}"></apex:outputText>
+                                            <br/>
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv8" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage_Expired" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC2_User_Already_Expired}"></apex:outputText>
+                                            <br/>
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv4" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage2" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText id="errMsg" styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC_NoInviteForRoleError} {!role}" ></apex:outputText>
+                                            <br/>                                                    
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alertDiv5" style="Display:none;">
+                                <div class="popupBackground" />
+                                <div class="apple_overlay">
+                                    <div style="box-shadow: 0 5px 15px rgba(0,0,0,5);">
+                                        <div class="gray-popup">
+                                            <div class = "close2" style="margin-left:320px;">
+                                                <a>
+                                                    <apex:commandButton style="margin-top: 85px; margin-right:-94px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" oncomplete="" value="×"/>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <div id="placeOrderErrorMessage2" class ="white-popup" style="text-align:center;">
+                                            <apex:outputText styleClass="addressText" style="font-size:16px;" value="{!$Label.RMEC_OwnerEmailAddress}" ></apex:outputText>
+                                            <br/>                                                    
+                                            <apex:commandButton styleClass="btn primary-btn default-button" style="margin-top: 20px;" value="OK" onclick="showHide();" oncomplete=""/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <apex:outputPanel rendered="{!!(oneTypeWrapperList.instancesForTypeWrapperList.size>0)}">
+                                <table width="100%" class="inviteeTable">
+                                    <colgroup>
+                                        <col width="17%"/>
+                                        <col width="15%"/>
+                                        <col width="11%"/>
+                                        <col width="15%"/>
+                                        <col width="24%"/>
+                                        <col width="28%"/>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr class="horizontal-line">
+                                            <th class="manageRoles"><span class="spanProductFacet">PRODUCT</span></th>
+                                            <th class="manageRoles"><span class="spanProductFacet">SIZES</span></th>
+                                            <th class="manageRoles"><span class="spanProductFacet">START DATE</span></th>
+                                            <th class="manageRoles"><span class="spanProductFacet">EXPIRATION DATE</span></th>
+                                            <th class="manageRoles"><span class="spanProductFacet">INSTANCE NAME</span></th>
+                                            <th class="manageRoles"></th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <br></br>
+                                <center class="allignNoDataText">
+                                    <apex:outputText styleClass="message-text" value="{!IF(oneTypeWrapperList.instanceType == 'Expired','You have no expired instances at this time.','You have no active instances at this time.')}"/>
+                                </center>
+                                <br></br>
+                            </apex:outputPanel>
+                            <apex:outputPanel rendered="{!oneTypeWrapperList.instancesForTypeWrapperList.size>0}">
+                                <apex:repeat id="repeat2" value="{!oneTypeWrapperList.instancesForTypeWrapperList}" var="instDetail">
+                                    <table id="Temp" width="100%" class="inviteeTable responsiveTbl">
+                                        <colgroup>
+                                            <col width="7%"/>
+                                        <col width="20%"/>
+                                        <col width="11%"/>
+                                            <col width="13%"/>
+                                            <col width="14%"/>
+                                            <col width="14%"/>
+                                            <col width="14%"/>
+                                        </colgroup>
+                                        <thead>
+                                            <tr class="horizontal-line">
+                                                <th class="manageRoles"><span class="spanProductFacet">PRODUCT</span></th>
+                                                <th class="manageRoles"><span class="spanProductFacet">SIZES</span></th>
+                                                <th class="manageRoles"><span class="spanProductFacet">START DATE</span></th>
+                                                <th class="manageRoles"><span class="spanProductFacet">EXPIRATION DATE</span></th>
+                                                <th class="manageRoles"><span class="spanProductFacet">INSTANCE NAME</span></th>
+                                                <th class="manageRoles"></th>
+                                                <th class="manageRoles"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td valign="bottom">
+                                                    <!-- BIZ-1524 -->
+                                                    <apex:outputPanel rendered="{!IF(instDetail.isPaid && (instDetail.productImage != ''), true, false)}">
+                                                        <apex:image url="{!URLFOR($Resource.RMEC_DesignResource, '/images/'+instDetail.productImage+'.png')}" width="200" />
+                                                    </apex:outputPanel>                                               
+                                                    <apex:outputPanel rendered="{!IF(instDetail.isTrial  && instDetail.isSizeNotNull && (instDetail.trialImage !='') , true, false)}">
+                                                        <apex:image url="{!URLFOR($Resource.RMEC_DesignResource, '/images/'+instDetail.trialImage+'.png')}" width="200" />
+                                                    </apex:outputPanel>
+                                                <apex:outputPanel rendered="{!IF(instDetail.isPOC && (instDetail.POCImage !='') , true, false)}">
+                                                    <apex:image url="{!URLFOR($Resource.RMEC_DesignResource, '/images/'+instDetail.POCImage+'.png')}" width="200" />
+                                                </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!IF(instDetail.isPreview && (instDetail.PreviewImage !='') , true, false)}">
+                                                        <apex:image url="{!URLFOR($Resource.RMEC_DesignResource, '/images/'+instDetail.PreviewImage+'.png')}" width="200" />
+                                                    </apex:outputPanel>
+                                                    <!-- BIZ-1524 -->
+                                                </td>
+                                                <td valign="bottom">
+                                                    <span class="product-size">
+                                                        <apex:outputPanel rendered="{!IF(instDetail.isSizeNotNull && instDetail.stackStatus == UPGRADE_FAILED, true, false)}">{!instDetail.sizeValue}GB</apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(!(instDetail.stackStatus == UPGRADE_FAILED), true, false)}">{!instDetail.sizeValue}GB</apex:outputPanel>
+                                                    </span>
+                                                    <!-- BIZ-1524 -->
+                                                    <apex:outputPanel rendered="{!instDetail.instancePageStackSettingsObj.isUpgradePermission__c}">
+                                                        <apex:outputPanel rendered="{!IF(instDetail.financialContact && instDetail.EndDate>=TODAY() && !instDetail.isPOInstance &&  !(oneTypeWrapperList.instanceType == 'Expired') && ((instDetail.isTrialUpgradable && instDetail.isTrial) || (instDetail.isUpgradable && instDetail.isPaid) || (instDetail.isPOCUpgradable && instDetail.isPOC) || (instDetail.isPreviewUpgradable && instDetail.isPreview)) && !(instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == RENEWAL_IN_PROGRESS || instDetail.stackStatus == CRASHED), true, false)}">
+                                                    <button type="button" class="saveButton btn btn-primary secondry-btn {!IF(instDetail.isPOC,'pocUpgradeButton','')}" onclick="showUpgradeMsg('{!instDetail.instanceIdToUse}')">
+                            <!-- BIZ-1480 -->
+                                                        {!instDetail.upgradeButtonText}
+                                                    </button> 
+                                                    </apex:outputPanel>                                                
+                                                <apex:outputPanel rendered="{!IF(instDetail.financialContact && instDetail.EndDate<TODAY() && !instDetail.isPOInstance &&  !(oneTypeWrapperList.instanceType == 'Expired') && ((instDetail.isTrialUpgradable && instDetail.isTrial) || (instDetail.isUpgradable && instDetail.isPaid) || (instDetail.isPOCUpgradable && instDetail.isPOC) || (instDetail.isPreviewUpgradable && instDetail.isPreview)) && !(instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == RENEWAL_IN_PROGRESS || instDetail.stackStatus == CRASHED), true, false)}">
+                                                    <button type="button" class="btn btn-primary tertiary-btn {!IF(instDetail.isPOC,'pocUpgradeButton','')}" onclick="showUpgradeMsg('{!instDetail.instanceIdToUse}')" disabled="True">
+                            <!-- BIZ-1480 -->
+                                                        {!instDetail.upgradeButtonText}
+                                                    </button> 
+                                                </apex:outputPanel>  
+                                                    <apex:outputPanel rendered="{!IF(((!instDetail.isTrialUpgradable && instDetail.isTrial)||(instDetail.isPreview && !instDetail.isPreviewUpgradable)) && instDetail.financialContact && !instDetail.isPOInstance &&  !(oneTypeWrapperList.instanceType == 'Expired') && instDetail.isTrialOnly && !(instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == RENEWAL_IN_PROGRESS || instDetail.stackStatus == CRASHED), true, false)}">
+                                                        <apex:outputLink styleClass="saveButton btn btn-primary secondry-btn" target="_blank" value="{!instDetail.InstanceInfo_URL1}">
+                                                            {!instDetail.upgradeButtonText}
+                                                        </apex:outputLink> 
+                                                    </apex:outputPanel>                                                                                             
+                                                    <!-- BIZ-1524 -->
+                                                <!--<apex:outputPanel rendered="{!IF(instDetail.isUpgradable && !instDetail.isPOInstance && instDetail.financialContact && !(oneTypeWrapperList.instanceType == 'Expired') && instDetail.isPaid && !(instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == RENEWAL_IN_PROGRESS), true, false)}">
+                                                    <button type="button" class="saveButton btn btn-primary secondry-btn" onclick="showNewUpgradeMsg('{!instDetail.instanceIdToUse}')">
+                                                        {!instDetail.upgradeButtonText}
+                                                    </button> 
+                                                </apex:outputPanel>-->
+                                                
+                                                <apex:outputPanel rendered="{!IF(instDetail.financialContact && (instDetail.isUpgradable && instDetail.isPaid) && instDetail.isPOInstance && !(oneTypeWrapperList.instanceType == 'Expired') && !(instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == RENEWAL_IN_PROGRESS), true, false)}"> 
+                                                    <apex:outputLink styleClass="saveButton btn btn-primary secondry-btn" target="_blank" value="{!$Label.RMEC_CONTACT_SALES}">
+                                                        {!instDetail.upgradeButtonText}
+                                                    </apex:outputLink>
+                                                    <!--<button type="button" class="saveButton btn btn-primary secondry-btn" target="_top" href="{!$Label.RMEC_CONTACT_SALES}">{!instDetail.upgradeButtonText}</button>-->
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </td>
+                                                <td class="startEndDate propAlign" >
+                                                    <apex:outputText value="{0,date,MMM dd, yyyy}">
+                                                        <apex:param value="{!instDetail.startDate}" />
+                                                    </apex:outputText>
+                                                </td>
+                                                <td class="startEndDate propAlign">
+                                                    <apex:outputText value="{0,date,MMM dd, yyyy}" >
+                                                        <apex:param value="{!instDetail.expirationDate}" />
+                                                    </apex:outputText>
+                                                </td>
+                                                <td class="propAlign">
+                                                    <!-- <apex:outputLink value="{!instDetail.stackUrl}" id="theLink1"> -->
+                                                    <apex:outputPanel >
+                                                        <apex:outputText style="margin-right: 10px;" value="{!instDetail.customName}"/>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!instDetail.instancePageStackSettingsObj.Edit_Instance_Name__c}">
+                                                        <apex:outputPanel id="customNewName" rendered="{!IF(instDetail.canRenameInstance && !(oneTypeWrapperList.instanceType == 'Expired') && instDetail.financialContact, true, false)}">
+                                                        <a data-toggle="modal" data-target="#newModal" onclick="assignValue('{!instDetail.instanceIdToUse}')">
+                                                            <span class="blue-text-link" style="font-size: 13px;">edit</span>
+                                                        </a>  
+                                                    </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                </td>
+                                                <td valign="middle" align="center" class="alignTestClass" style="{!If(instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == UPGRADE_FAILED, 'vertical-align: top;', '')}">
+                                                    <apex:outputPanel rendered="{!instDetail.instancePageStackSettingsObj.Invite_Edit_User__c}">
+                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && !(oneTypeWrapperList.instanceType == 'Expired') && (instDetail.canInvite) && ((instDetail.invitationLimit > 0 && (instDetail.cloudInviteeCount < instDetail.invitationLimit)) || instDetail.invitationLimit == 0), true, false)}">
+                                                        <button type="button" class="saveButton btn btn-primary secondry-btn" data-toggle="modal" data-target="#modalWindow">
+                                                            INVITE USERS
+                                                            <apex:actionsupport event="onclick" action="{!getInstanceDetails}" rerender="invitePanel">
+                                                                <apex:param name="instEmailClickedID" assignto="{!emailClickedInstanceId}" value="{!instDetail.instanceIdToUse}"></apex:param>
+                                                                <apex:param name="instHelpText" assignto="{!helpTextinPlaceHolder}" value="{!instDetail.helpTextforInvitee}"></apex:param>
+                                                            </apex:actionsupport>
+                                                        </button>
+                                                    </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && !(oneTypeWrapperList.instanceType == 'Expired') && (instDetail.canInvite) && ((instDetail.cloudInviteeCount >= instDetail.invitationLimit && instDetail.invitationLimit > 0) || instDetail.cloudInviteeCount == instDetail.invitationLimit && instDetail.invitationLimit > 0), true, false)}">
+                                                        <button type="button" class="saveButton btn btn-primary secondry-btn" data-toggle="modal" data-target="#modalWindow_Error">
+                                                            INVITE USERS
+                                                        </button>
+                                                    </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                    <apex:outputPanel rendered="{!instDetail.instancePageStackSettingsObj.Upgrade_Renew__c}">
+                                                    <!-- BIZ-1524 -->
+                                                    <apex:outputPanel rendered="{!IF((instDetail.financialContact && (instDetail.stackDeletionDate > TODAY()) && (oneTypeWrapperList.instanceType == 'Expired') && instDetail.isPaid && !(instDetail.stackStatus == DELETE_COMPLETE || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED || instDetail.stackStatus == UPGRADE_IN_PROGRESS || instDetail.stackStatus == RENEWAL_IN_PROGRESS)), true, false)}" style="width:{!IF((instDetail.financialContact && (instDetail.stackDeletionDate > TODAY()) && (oneTypeWrapperList.instanceType == 'Expired') && instDetail.isPaid && !(instDetail.stackStatus == DELETE_COMPLETE || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED)), 'auto' , '127px')};" >
+                                                        <!--<apex:commandButton style="padding:5px;" styleclass="saveButton btn btn-primary primary-btn" value="RENEW SUBSCRIPTION" action="{!newSubscription}" rerender="hiddenBlock">-->
+                                                        <apex:actionsupport event="onclick" action="{!newSubscription}" rerender="hiddenBlock">
+                                                            <button type="button" class="saveButton btn btn-primary primary-btn renewSubscriptionBtn">
+                                                                RENEW <br/> SUBSCRIPTION
+                                                            </button>
+                                                            <apex:param name="expiredInstanceId" assignto="{!expiredInstanceId}" value="{!instDetail.instanceIdToUse}"></apex:param>
+                                                            <apex:param name="expiredInstaceProdType" assignto="{!prodTypeToSend}"
+                                                            value="{!instDetail.temp}"></apex:param>
+                                                        </apex:actionsupport>
+                                                        <!--</apex:commandButton>-->
+                                                    </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                    </td>
+                                                <td valign="middle" align="center" class="alignTestClass" style="{!If(instDetail.stackStatus == RENEWAL_IN_PROGRESS, 'vertical-align: top; padding-top: 7px;', '')}">
+                                                    <apex:outputPanel styleClass="responsiveLink" rendered="{!IF(instDetail.stackAdmin && ((instDetail.canManageRoles && instDetail.isPaid) || (instDetail.canManageRolesForTrials && instDetail.isTrial) || (instDetail.canManageRolesForPOC && instDetail.isPOC) || (instDetail.canManageRolesForPreview && instDetail.isPreview)), true, false)}">
+                                                        <a data-toggle="modal" data-target="#myModal">
+                                                                <span class="inviteeRecord" align="left">MANAGE PRODUCT ROLES</span>
+                                                                <apex:actionsupport event="onclick" action="{!populateInstRolePopUpWrapper}" rerender="tableDiv">
+                                                                    <apex:param name="instClickedID" assignto="{!instManageRoleClickedId}" value="{!instDetail.instanceIdToUse}"></apex:param>
+                                                                </apex:actionsupport>
+                                                            </a>
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(oneTypeWrapperList.instanceType == 'Active', true, false)}">
+                                                        <apex:outputPanel rendered="{!instDetail.instancePageStackSettingsObj.IsStackAccessAllowed__c}">
+                                                            <apex:outputPanel rendered="{!IF((instDetail.stackStatus == CREATE_COMPLETE || instDetail.stackStatus == RENEWAL_COMPLETE || instDetail.stackStatus == UPGRADE_COMPLETE || instDetail.stackStatus == RENEWAL_IN_PROGRESS || instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED), true, false)}">
+                                                                <apex:outputPanel rendered="{!IF((instDetail.stackStatus == RENEWAL_IN_PROGRESS), true, false)}">
+                                                                    <apex:outputLabel style="color: #474444;">Renewal in process</apex:outputLabel>
+                                                                    <br/>
+                                                                </apex:outputPanel>
+                                                                <apex:outputlink styleClass="btn btn-primary primary-btn" target="_blank" value="{!instDetail.stackUrl}">ACCESS INSTANCE </apex:outputLink>                                                      
+                                                                <apex:outputPanel rendered="{!IF(instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED, true, false)}">
+                                                                    <br/><br/>
+                                                                    <apex:outputText >
+                                                                        There has been an error. Please 
+                                                                        <apex:outputLink styleclass="blue-text-link" value="{!$Site.Prefix}{!$Label.RMEC_SUBMITCASE}" > {!$Label.RMEC_InstanceHelpText5}</apex:outputLink>
+                                                                    </apex:outputText>
+                                                            </apex:outputPanel>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!IF((instDetail.stackStatus == UPGRADE_IN_PROGRESS), true, false)}">
+                                                                <apex:outputLabel style="color: #474444;">Upgrade in process</apex:outputLabel>
+                                                                <br/><!--Attention-->
+                                                                <!--<apex:outputlink styleClass="btn btn-primary tertiary-btn" target="_blank" value="{!instDetail.stackUrl}" disabled="true">ACCESS SPLUNK </apex:outputLink> -->
+                                                                <apex:commandButton styleClass="btn btn-primary tertiary-btn" value="ACCESS INSTANCE" disabled="true"/>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!IF(instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED, true, false)}">
+                                                                <!--<apex:outputlink styleClass="btn btn-primary tertiary-btn" target="_blank" value="{!instDetail.stackUrl}" disabled="true">ACCESS SPLUNK </apex:outputLink> -->
+                                                                <apex:commandButton styleClass="btn btn-primary tertiary-btn" value="ACCESS INSTANCE" disabled="true"/>
+                                                                <br/><br/>
+                                                                <apex:outputText >
+                                                                    There has been an error. Please 
+                                                                    <apex:outputLink styleclass="blue-text-link" value="{!$Site.Prefix}{!$Label.RMEC_SUBMITCASE}" > {!$Label.RMEC_InstanceHelpText5}</apex:outputLink>
+                                                                </apex:outputText>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!!instDetail.instancePageStackSettingsObj.IsStackAccessAllowed__c}">
+                                                            <apex:outputPanel rendered="{!IF((instDetail.stackStatus == UPGRADE_IN_PROGRESS), true, false)}">
+                                                                <apex:outputLabel style="color: #474444;">Upgrade in process</apex:outputLabel>
+                                                                <br/>
+                                                            </apex:outputPanel>
+                                                            <apex:outputPanel rendered="{!IF((instDetail.stackStatus == RENEWAL_IN_PROGRESS), true, false)}">
+                                                                <apex:outputLabel style="color: #474444;">Renewal in process</apex:outputLabel>
+                                                                <br/>
+                                                            </apex:outputPanel>
+                                                                <apex:commandButton styleClass="btn btn-primary tertiary-btn" value="ACCESS INSTANCE" disabled="true"/>
+                                                            <apex:outputPanel rendered="{!IF(instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED, true, false)}">
+                                                                <br/><br/>
+                                                                <apex:outputText >
+                                                                    There has been an error. Please <apex:outputLink styleclass="blue-text-link" value="{!$Site.Prefix}{!$Label.RMEC_SUBMITCASE}" > {!$Label.RMEC_InstanceHelpText5}</apex:outputLink>
+                                                                </apex:outputText>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel>
+                                                    </apex:outputPanel>
+                                                        <apex:outputPanel rendered="{!IF(oneTypeWrapperList.instanceType == 'Expired', true, false)}">
+                                                            <apex:commandButton styleClass="btn btn-primary tertiary-btn" value="ACCESS INSTANCE" disabled="true"/><!--Attention-->
+                                                            <br/><br/>
+                                                            <apex:outputPanel rendered="{!IF((instDetail.stackStatus == UPGRADE_FAILED || instDetail.stackStatus == RENEWAL_FAILED || instDetail.stackStatus == CRASHED || instDetail.stackStatus == CREATE_FAILED), true, false)}">
+                                                                <apex:outputText >
+                                                                    There has been an error. Please <apex:outputLink styleclass="blue-text-link" value="{!$Site.Prefix}{!$Label.RMEC_SUBMITCASE}" > {!$Label.RMEC_InstanceHelpText5}</apex:outputLink>           
+                                                                </apex:outputText>
+                                                            </apex:outputPanel>
+                                                        </apex:outputPanel> 
+                                                    </td>                                           
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <apex:outputPanel id="inviteeList" rendered="{!instDetail.inviteeRoleWrapInstanceList.size>0}">
+                                            <div class="table-outer">
+                                                <table id="subTable" width="100%" class="responsiveTbl">
+                                                    <colgroup>
+                                                        <col width="15%"/>
+                                                        <col width="24%"/>
+                                                        <col width="13%"/>
+                                                        <col width="25%"/>
+                                                        <col width="23%"/>
+                                                    </colgroup>
+                                                    <thead>
+                                                        <tr class="inviteeListTR">
+                                                            <th class="inviteeListTh" >USER NAME</th>
+                                                            <th class="inviteeRecord" align="left">EMAIL ADDRESS</th>
+                                                            <th class="inviteeRecord" align="justify">STATUS</th>
+                                                            <th class="inviteeRecord" align="left">PRODUCT ROLES</th>
+                                                            <th class="inviteeRecord" align="right">
+                                                            <!-- Button trigger modal -->
+                                                            <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && ((instDetail.canManageRoles && instDetail.isPaid) || (instDetail.canManageRolesForTrials && instDetail.isTrial) || (instDetail.canManageRolesForPOC && instDetail.isPOC) || (instDetail.canManageRolesForPreview && instDetail.isPreview)), true, false)}">
+                                                                <a data-toggle="modal" data-target="#myModal">
+                                                                        <span class="URLlinkblue white-text-link"> MANAGE PRODUCT ROLES </span>
+                                                                        <apex:actionsupport event="onclick" action="{!populateInstRolePopUpWrapper}" rerender="tableDiv">
+                                                                            <apex:param name="instClickedID" assignto="{!instManageRoleClickedId}" value="{!instDetail.instanceIdToUse}"></apex:param>
+                                                                        </apex:actionsupport>
+                                                                    </a>
+                                                                </apex:outputPanel>
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <apex:outputPanel id="invitee">
+                                                        <apex:repeat id="repeat3" value="{!instDetail.inviteeRoleWrapInstanceList}" var="instInvitee" >
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td colspan="1" class="inviteeTd">{!instInvitee.username}</td>
+                                                                    <td colspan="1" class="inviteeTd" >{!instInvitee.email}</td>
+                                                                    <td colspan="1" class="inviteeTd">{!instInvitee.status}</td>
+                                                                    <td colspan="1" class="inviteeTd">{!instInvitee.productRole}</td>
+                                                                    <td colspan="1" align="right">
+                                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && instInvitee.isRoleEditable && (instInvitee.purchaseRole!=INSTANCE_OWNER) && !(instDetail.haveMultipleRoles), true, false)}">                                                                
+                                                                            <a align="center" class="blue-text-link editButton fontSize14" onclick="manageRoleHeaderTitle('{!instInvitee.username}')" data-target="#userRoleModal2" data-toggle="modal" type="button">
+                                                                                edit user roles
+                                                                                <apex:actionsupport event="onclick" action="{!populateInviteeRolePopUpWrapper}" rerender="tableDivUserRole1">
+                                                                                    <apex:param name="invClickedID" assignto="{!clickedInviteeId}" value="{!instInvitee.inviteeID}"></apex:param>
+                                                                                </apex:actionsupport>
+                                                                            </a>
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && instInvitee.isRoleEditable && (instDetail.haveMultipleRoles), true, false)}">
+                                                                            <a align="center" class="blue-text-link editButton fontSize14" onclick="manageRoleHeaderTitle('{!instInvitee.username}')" data-target="#userRoleModal" data-toggle="modal" type="button">
+                                                                                edit user roles
+                                                                                <apex:actionsupport event="onclick" action="{!populateInviteeRolePopUpWrapper}" rerender="tableDivUserRole">
+                                                                                    <apex:param name="invClickedID" assignto="{!clickedInviteeId}" value="{!instInvitee.inviteeID}"></apex:param>
+                                                                                </apex:actionsupport>
+                                                                            </a>
+                                                                        </apex:outputPanel>
+                                                                        <!-- Adding New link for Resend Invitation -->
+                                                                        <apex:outputPanel rendered="{!IF(instInvitee.canResendInvite && instDetail.stackAdmin && (instInvitee.status == INVITATION_EXPIRED || instInvitee.status == 'Initiated') && (instDetail.stackStatus == CREATE_COMPLETE || instDetail.stackStatus == RENEWAL_COMPLETE || instDetail.stackStatus == UPGRADE_COMPLETE), true, false)}">                                                
+                                                                            <apex:commandLink styleClass="blue-text-link fontSize14" action="{!test}" onComplete="showResentNotificationDiv();"  value="resend invitation" reRender="ResendeMailPanel, ResendButtonPanel">
+                                                                                <apex:param name="invClickedID" assignto="{!clickedInviteeId}" value="{!instInvitee.inviteeID}"></apex:param>
+                                                                                <apex:param name="invClickedEmail" assignto="{!emailAddress}" value="{!instInvitee.email}"></apex:param>
+                                                                                <apex:param name="instEmailClickedID" assignto="{!emailClickedInstanceId}" value="{!instDetail.instanceIdToUse}"></apex:param>
+                                                                            </apex:commandLink>
+                                                                            &nbsp;|&nbsp;
+                                                                        </apex:outputPanel>
+                                                                        <!-- ends here -->
+                                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && !instInvitee.hideDelete && instInvitee.purchaseRole!=INSTANCE_OWNER , true, false)}">
+                                                                            &nbsp;|&nbsp;
+                                                                            <a onclick="showDeleteNotificationDiv('{!instInvitee.inviteeID}','{!instInvitee.username}')">
+                                                                                <span class="blue-text-link fontSize14">delete user</span>
+                                                                            </a> 
+                                                                            <!-- <apex:commandLink styleClass="blue-text-link fontSize14" action="{!test}" onComplete="showDeleteNotificationDiv();"  value="delete user" reRender="InviteePanel, InviteeButtonPanel">
+                                                                                <apex:param name="deleteInviteId" assignto="{!clickedInviteeIdToDeactivate}" value="{!instInvitee.inviteeID}"></apex:param>
+                                                                                <apex:param name="deleteInviteName" assignto="{!clickedInviteeNameToDeactivate}" value="{!instInvitee.username}"></apex:param>
+                                                                            </apex:commandLink> -->
+                                                                        </apex:outputPanel>
+                                                                        <apex:outputPanel styleClass="responsiveLinkData fontSize14" rendered="{!IF((instDetail.stackAdmin && !instInvitee.isRoleEditable && instInvitee.hideDelete) , true, false)}">
+                                                                            <a onclick="showDeleteInviteeDiv('{!instInvitee.inviteeID}','{!instInvitee.email}')">
+                                                                                <span class="blue-text-link fontSize14">delete user</span>
+                                                                            </a> 
+                                                                            <!-- <apex:commandLink styleClass="blue-text-link" action="{!test}" onComplete="showDeleteInviteeDiv();"  value="delete user" reRender="InviteePanel2, InviteeButtonPanel2">
+                                                                                <apex:param name="deleteInviteId" assignto="{!clickedInviteeIdToDeactivate}" value="{!instInvitee.inviteeID}"></apex:param>
+                                                                                <apex:param name="deleteInviteName" assignto="{!clickedInviteeNameToDeactivate}" value="{!instInvitee.email}"></apex:param>
+                                                                            </apex:commandLink> -->
+                                                                        </apex:outputPanel>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                            
+                                                        </apex:repeat>
+                                                    </apex:outputPanel>
+                                                </table> 
+                    <!-- BIZ-1163 -->                                         
+                                        <apex:outputPanel id="bottomPanel" rendered="{!IF(instDetail.financialContact&&(instDetail.showInfoText&&instDetail.isPaid||instDetail.showInfoTextForTrials&&instDetail.isTrial||instDetail.isPreview&&instDetail.showInfoTextforPreview||instDetail.isPOC&&instDetail.showInfoTextforPOC)&&(instDetail.isPOC&&instDetail.isResetAllowedForPOC||instDetail.isTrial&&instDetail.isResetAllowedForTrial||instDetail.isPaid&&instDetail.isResetAllowedForPaid||instDetail.isPreview&&instDetail.isResetAllowedForPreview),true,false)}">
+                                            <div class="gray-box-cnt" style="padding: 0px">
+                                                <table style="border: none">
+                                                    <tbody style="background: #eee !important">
+                                                        <tr>
+                                                            <td style="vertical-align: middle;">
+                                                                <p align="left">
+                                                                    <label class="helpTextClass" style='margin: 0px'>
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Text1}" rendered="{!IF(instDetail.InstanceInfo_Text1!='',True, False)}" />
+                                                                        <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                                        <apex:outputLink value="{!instDetail.InstanceInfo_URL1}" rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" target="_blank">
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Label1}" rendered="{!IF(instDetail.InstanceInfo_Label1!='',True, False)}" />
+                                                                        </apex:outputLink>
+                                                                        <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Text2}" rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" />
+                                                                        <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" />
+                                                                        <!-- Space if Text2 is rendered. -->
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Text3}" rendered="{!IF(instDetail.InstanceInfo_Text3!='',True, False)}" />
+                                                                        <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />
+                                                                        <apex:outputLink value="{!instDetail.InstanceInfo_URL2}" rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" target="_blank">
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Label2}" rendered="{!IF(instDetail.InstanceInfo_Label2!='',True, False)}" />
+                                                                        </apex:outputLink>
+                                                                        <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />
+                                                                        <apex:outputText value="{!instDetail.InstanceInfo_Text4}" rendered="{!IF(instDetail.InstanceInfo_Text4!='',True, False)}" />
+                                                                        <!-- <apex:outputLink styleclass="helpTextUrlClass" value="{!$Site.Prefix}{!$Label.RMEC_SUBMITCASE}" > {!$Label.RMEC_InstanceHelpText5}</apex:outputLink>
+                                                                        {!$Label.RMEC_InstanceHelpText2}<br/>{!$Label.RMEC_InstanceHelpText3}
+                                                                        <apex:outputLink styleclass="helpTextUrlClass" target="_blank" value="{!$Label.RMEC_INSTANCE_CLICK_HERE}" style="align:center"> click here. </apex:outputLink>
+                                                                        <br/>{!$Label.RMEC_InstanceHelpText4} -->
+                                                                    </label>
+                                                                </p>
+                                                            </td>
+                                                            <td style="width: 25%;vertical-align: middle;">
+                                                                <p>
+                                                                    <span class="spanProductFacet" style="margin-right: -27% !important;">
+                                                                        <span style="font-size: 12px;">
+                                                                            <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && !(oneTypeWrapperList.instanceType == 'Expired') && instDetail.showUnlockButton == true, true, false)}">
+                                                                                {!instDetail.licensesUsed}/{!instDetail.licenseUnlocksPerPeriod}
+                                                                                USED IN
+                                                                                {!instDetail.unlockPeriodForLicense}
+                                                                                DAYS
+                                                                            </apex:outputPanel>
+                                                                        </span>
+                                                                        &nbsp;
+                                                                        <apex:outputPanel rendered="{!IF(instDetail.stackAdmin && !(oneTypeWrapperList.instanceType == 'Expired') && instDetail.showUnlockButton == true, true, false)}">
+                                                                            <button class="btn-small btn-primary secondry-btn !important" type="button" onclick="showUnlockPopup('{!instDetail.showUnlockButton}','{!instDetail.cloudStackId}','{!instDetail.licensesUsed}','{!instDetail.licenseUnlocksPerPeriod}','{!instDetail.unlockPeriodForLicense}','{!instDetail.licenseUnlockEndDate}')">
+                                                                                <p style="text-transform: none;">
+                                                                                    Unlock
+                                                                                </p>
+                                                                            </button>
+                                                                        </apex:outputPanel> 
+                                                                    </span>
+                                                                </p>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>   
+                                            </div>
+                                        </apex:outputPanel>
+                                        <apex:outputPanel id="bottomPanel2" rendered="{!IF(instDetail.stackAdmin&& !instDetail.financialContact &&(instDetail.showInfoText&&instDetail.isPaid||instDetail.showInfoTextForTrials&&instDetail.isTrial||instDetail.isPreview&&instDetail.showInfoTextforPreview||instDetail.isPOC&&instDetail.showInfoTextforPOC)&&(instDetail.isPOC&&instDetail.isResetAllowedForPOC||instDetail.isTrial&&instDetail.isResetAllowedForTrial||instDetail.isPaid&&instDetail.isResetAllowedForPaid||instDetail.isPreview&&instDetail.isResetAllowedForPreview),true,false)}">
+                                                <div class="gray-box-cnt" style="padding:20px 20px 0px 20px !important">
+                                                    <p>
+                                                        <label class="helpTextClass">
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text1}" rendered="{!IF(instDetail.InstanceInfo_Text1!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_Text1!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                            
+                                                            <apex:outputLink value="{!instDetail.InstanceInfo_URL1}" rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" target="_blank">
+                                                                <apex:outputText value="{!instDetail.InstanceInfo_Label1}" rendered="{!IF(instDetail.InstanceInfo_Label1!='',True, False)}" />                                                                                 
+                                                            </apex:outputLink>
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text2}" rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" /> <!-- Space if Text2 is rendered. -->
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text3}" rendered="{!IF(instDetail.InstanceInfo_Text3!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />                                                        
+                                                            <apex:outputLink style="color: #03a2d6" value="{!instDetail.InstanceInfo_URL2}" rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" target="_blank">
+                                                                    <apex:outputText value="{!instDetail.InstanceInfo_Label2}" rendered="{!IF(instDetail.InstanceInfo_Label2!='',True, False)}" />                                                                                  
+                                                            </apex:outputLink>
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text4}" rendered="{!IF(instDetail.InstanceInfo_Text4!='',True, False)}" />
+                                                        <!-- BIZ-1163 -->
+                                            </label>
+                                                    </p>
+                                                    <br/>
+                                                </div>
+                                            </apex:outputPanel>
+                                        <apex:outputPanel id="bottomPanel1" rendered="{!IF(instDetail.stackAdmin&&(instDetail.showInfoText&&instDetail.isPaid||instDetail.showInfoTextForTrials&&instDetail.isTrial||instDetail.isPreview&&instDetail.showInfoTextforPreview||instDetail.isPOC&&instDetail.showInfoTextforPOC)&&(instDetail.isPOC&&!instDetail.isResetAllowedForPOC||instDetail.isTrial&&!instDetail.isResetAllowedForTrial||instDetail.isPaid&&!instDetail.isResetAllowedForPaid||instDetail.isPreview&&!instDetail.isResetAllowedForPreview),true,false)}">
+                                                <div class="gray-box-cnt" style="padding:20px 20px 0px 20px !important">
+                                                    <p>
+                                                        <label class="helpTextClass">
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text1}" rendered="{!IF(instDetail.InstanceInfo_Text1!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_Text1!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                            
+                                                            <apex:outputLink value="{!instDetail.InstanceInfo_URL1}" rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" target="_blank">
+                                                                <apex:outputText value="{!instDetail.InstanceInfo_Label1}" rendered="{!IF(instDetail.InstanceInfo_Label1!='',True, False)}" />                                                                                 
+                                                            </apex:outputLink>
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL1!='',True, False)}" />
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text2}" rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_Text2!='',True, False)}" /> <!-- Space if Text2 is rendered. -->
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text3}" rendered="{!IF(instDetail.InstanceInfo_Text3!='',True, False)}" />
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />                                                        
+                                                            <apex:outputLink style="color: #03a2d6" value="{!instDetail.InstanceInfo_URL2}" rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" target="_blank">
+                                                                    <apex:outputText value="{!instDetail.InstanceInfo_Label2}" rendered="{!IF(instDetail.InstanceInfo_Label2!='',True, False)}" />                                                                                  
+                                                            </apex:outputLink>
+                                                            <apex:outputText value=" " rendered="{!IF(instDetail.InstanceInfo_URL2!='',True, False)}" />
+                                                            <apex:outputText value="{!instDetail.InstanceInfo_Text4}" rendered="{!IF(instDetail.InstanceInfo_Text4!='',True, False)}" />
+                                                        <!-- BIZ-1163 -->
+                            </label>
+                                                        </p>
+                                                        <br/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </div>
+                                        </apex:outputPanel>
+                                    </apex:repeat>
+                                </apex:outputPanel>
+                                <apex:outputPanel rendered="{!oneTypeWrapperList.instancesForTypeWrapperList.size<0}">
+                                    <apex:outputText value="You have no expired Instances at this time." />
+                                </apex:outputPanel>
+                            </apex:repeat>
+                        </div>
+                    </div>
+                </apex:form>
+                <apex:form id="instPopupForm">
+                    <apex:outputPanel id="instRolePopUp">
+                        <!-- Modal -->
+                        <div class="modal in modalPosition" data-backdrop="static" data-keyboard="false" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+                            <div style="height: auto;" class="modal-backdrop fade in"> </div>
+                            <div class="modal-dialog modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:commandButton style="margin-top:-10px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="return null;" value="×"/>
+                                        <h4 class="modal-title" id="myModalLabel"><b>Manage product roles</b></h4>
+                                    </div>
+                                    <div class="modal-body" style="margin-top: 20px;">
+                                        <apex:outputPanel id="tableDiv">
+                                            <script>
+                                                $(this).ready(function() {
+                                                    var fid = $.fn.escapeSpecialChars('instancesPage:instPopupForm');
+                                                    var formFields = $(fid + ' :input');
+                                                    var flag = true;
+                                                    var disableBut = false;
+                                                    for (var i = 0; i < formFields.length; i++) {
+                                                        if(formFields[i].type == 'text') {
+                                                            try {
+                                                                var fldid = $.fn.escapeSpecialChars(formFields[i].id);
+                                                                flag = $(fldid).validate().check(fldid);
+                                                            } catch (e) {}
+                                                            if (!flag && !disableBut) {
+                                                                disableBut = true;
+                                                            }
+                                                        }
+                                                    }
+                                                    if(disableBut) {
+                                                        $('[id$=add-new-button]').attr('disabled', true);
+                                                        $('[id$=inst-role-update-button]').attr('disabled', true);
+                                                        $('[id$=inst-role-update-button]').addClass("tertiary-btn");
+                                                        $('[id$=inst-role-update-button]').removeClass("primary-btn");
+                                                        $( "a" ).each(function() {
+                                                            if($(this).hasClass("addRoleAction")){
+                                                                $(this).hide();
+                                                                if($(this).next('span').text() == '|') {
+                                                                    $(this).next('span').text('');
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                    else {
+                                                        $('[id$=add-new-button]').attr('disabled', false);
+                                                        $('[id$=inst-role-update-button]').attr('disabled', false);
+                                                        $('[id$=inst-role-update-button]').addClass("primary-btn");
+                                                        $('[id$=inst-role-update-button]').removeClass("tertiary-btn");
+                                                        $( "a" ).each(function() {
+                                                            if($(this).hasClass("addRoleAction")){
+                                                                $(this).show();
+                                                                $(this).next('span').text('|');
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            </script>
+                                            <apex:repeat id="invRep1" value="{!instRolesPopUpDataList}" var="instRolesData">
+                                                <apex:repeat id="invRep2" value="{!instRolesData.instRoleListPopUpWrapperList}" var="instRole">
+                                                    <table width="100%" style="table-layout:fixed; word-wrap:break-word">
+                                                        <col width="35%"/>
+                                                        <col width="35%"/>
+                                                        <col width="30%"/>
+                                                        <tr style="height:65px">
+                                                            <td align="left">{!instRole.roleName}</td>
+                                                            <td>
+                                                                <apex:outputPanel rendered="{!instRole.allowEdit}" id="allOwEdit">
+                                                                    <div class="text-field-pos">
+                                                                        <apex:inputText html-placeholder="Role Name*" styleClass="text-field text-field-large text-field-default addRole" id="changedRoleEdit" alt="changedRoleEdit" value="{!instRole.changedRoleName}"/>
+                                                                        <span class="error_msg"></span>
+                                                                    </div>
+                                                                </apex:outputPanel>
+                                                                <apex:outputText value="{!instRole.changedRoleName}" id="changedRole" rendered="{!instRole.showSavedName}"/>
+                                                            </td>
+                                                            <td align="right">
+                                                                <apex:outputPanel rendered="{!IF(instRole.isDefaultRole = false,true,false)}">
+                                                                    <apex:outputPanel rendered="{!IF(instRole.allowEdit = false,true,false)}">
+                                                                        <apex:commandLink value="edit" action="{!updateInstRolePopUpWrapperOnEdit}" reRender="tableDiv">
+                                                                            <apex:param name="editClickedID" assignto="{!editClickedInstRoleId}" value="{!instRole.instanceRoleId}"></apex:param>
+                                                                            <apex:param name="editClickedParentInst" assignto="{!editClickedParentInstId}" value="{!instRolesData.instID}"></apex:param>
+                                                                        </apex:commandLink>
+                                                                        <apex:outputPanel rendered="{!!instRole.hideDeleteLink}" layout="none">
+                                                                            &nbsp;<apex:commandLink value=" delete" action="{!updateInstRolePopUpWrapperOnDel}" reRender="tableDiv">
+                                                                                <apex:param name="delClickedID" assignto="{!delClickedInstRoleId}" value="{!instRole.instanceRoleId}"></apex:param>
+                                                                                <apex:param name="delClickedParentInst" assignto="{!delClickedParentInstId}" value="{!instRolesData.instID}"></apex:param>
+                                                                            </apex:commandLink>
+                                                                        </apex:outputPanel>
+                                                                    </apex:outputPanel>
+                                                                    <apex:outputPanel rendered="{!instRole.allowEdit}" style="">
+                                                                        <apex:commandLink styleClass="addRoleAction" value="Save" action="{!updateInstRolePopUpWrapperOnSave}" reRender="tableDiv">
+                                                                            <apex:param name="saveClickedID" assignto="{!saveClickedInstRoleId}" value="{!instRole.instanceRoleId}"></apex:param>
+                                                                            <apex:param name="saveClickedParentInst" assignto="{!saveClickedParentInstId}" value="{!instRolesData.instID}"></apex:param>
+                                                                        </apex:commandLink>                                                                    
+                                                                        <apex:outputPanel rendered="{!!instRole.hideDeleteLink}" layout="none">
+                                                                            <span id="dis">|</span>
+                                                                            <apex:commandLink styleClass="deleteRoleAction" value=" delete" action="{!updateInstRolePopUpWrapperOnDel}" reRender="tableDiv">
+                                                                                <apex:param name="delClickedID" assignto="{!delClickedInstRoleId}" value="{!instRole.instanceRoleId}"></apex:param>
+                                                                                <apex:param name="delClickedParentInst" assignto="{!delClickedParentInstId}" value="{!instRolesData.instID}"></apex:param>
+                                                                            </apex:commandLink>
+                                                                        </apex:outputPanel>
+                                                                    </apex:outputPanel>
+                                                                </apex:outputPanel>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <hr color="#B2B2B2">
+                                                    </hr>
+                                                </apex:repeat>
+                                            </apex:repeat>
+                                            <div style="margin-top:10px;" align="right" draggable="false">
+                                                <apex:commandButton id="add-new-button" styleClass="saveButton btn btn-primary secondry-btn" style="font-weight: bold" action="{!addNewInstRoleOnPopUp}" reRender="tableDiv" value="ADD NEW"/>
+                                            </div>
+                                        </apex:outputPanel>
+                                        <div style="margin-top:15px;font-size:11px;width:250px;">
+                                            <center>*Role names cannot accept Upper-case, spaces, colons, or forward slashes</center>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="return null;" value="Close"/>
+                                        <apex:commandButton id="inst-role-update-button" styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="sendInstRoleUpdateRequest();" value="Save" disabled="true"/>
+                                    </div>
+                                </div>                      
+                            </div>
+                        </div>
+                        <apex:actionFunction name="sendInstRoleUpdateLoading" onComplete="window.location.reload(true);" action="{!updateInstRolesPerPopUpOnSave}" />
+                    </apex:outputPanel> 
+                </apex:form>
+                <apex:form id="instRenameForm">
+                    <apex:outputPanel id="instRolePopUp2">
+                        <!-- Modal2 -->
+                        <div class="modal in modalPosition" id="newModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+                            <div style="height: auto;" class="modal-backdrop fade in"> </div>
+                            <div class="modal-dialog modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:commandButton style="margin-top:-10px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="return null;" value="×"/>
+                                        <h4 class="modal-title" id="myModalLabel"><b>Name this Instance</b></h4>
+                                    </div>
+                                    <div class="modal-body" style="margin-top: 20px;">
+                                        <apex:outputPanel id="tableDiv1">
+                                            <div style="margin-top:15px; margin-bottom:15px; font-size: 17px;">Instance Name</div>                                    
+                                            <apex:outputPanel >
+                                                <div class="text-field-pos">
+                                                    <apex:inputText styleClass="text-field text-field-large text-field-default" id="instanceCustomName" alt="instanceCustomName" html-placeholder="My Instance Name" value="{!customInstanceName}" required="true"/>
+                                                    <span class="error_msg"></span>
+                                                </div>
+                                            </apex:outputPanel>
+                                        </apex:outputPanel>
+                                        <apex:inputHidden id="stkid" value="{!clickedStackId}"/>
+                                    </div>
+                                    <div class="modal-footer" style="border:none !important;">
+                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="return null;" value="Cancel"/>
+                                        <apex:commandButton id="new-Name-Save-button" styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Save" onClick="sendUpdatedName();" disabled="true" />
+                                    </div>                                              
+                                </div>                      
+                            </div>
+                        </div>              
+                        <apex:actionFunction name="sendInstNameUpdateLoading" onComplete="window.location.reload(true);" action="{!newNameofInstance}" />
+                    </apex:outputPanel>            
+                </apex:form>
+                <!-- Modal2 close -->
+                <apex:form id="invRolePopUp_cloud">
+                    <apex:outputPanel id="userRolePopUp_cloud">
+                        <!-- Modal -->
+                        <div class="modal in" id="userRoleModal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="userRoleModalLabel" aria-hidden="false">
+                            <div style="height: auto;" class="modal-backdrop fade in"> </div>
+                            <div class="modal-dialog modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:commandButton style="margin-top:-10px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="hideError();" value="×"/>
+                                        <h4 class="modal-title" id="userRoleModalLabelE"><b></b></h4>
+                                    </div>
+                                    <div id = "roleError" style="display:none">
+                                        <br/>
+                                        <center>
+                                            <apex:outputLabel style="color:red" value="Atleast 1 role is required" />
+                                        </center>
+                                    </div>
+                                    <div class="modal-body" style="margin-top: 20px;">
+                                        <apex:actionFunction name="sendInvListUpdateLoading" onComplete="window.location.reload(true)" action="{!updateInvtRolesPerPopUpOnSave}" />
+                                        <apex:outputPanel id="tableDivUserRole">
+                                            <apex:repeat id="rep1" value="{!inviteeRolesPopUpDataList}" var="invtRolesData">
+                                                <apex:repeat id="rep2" value="{!invtRolesData.invtRoleListPopUpWrapperList}" var="invtRole">
+                                                    <table width="100%" style="table-layout:fixed; word-wrap:break-word">
+                                                        <col width="50%"/>
+                                                        <col width="50%"/>
+                                                        <tr style="height: 40px;">
+                                                            <td align="left">
+                                                                <apex:outputPanel rendered="{!invtRole.isNameRow}"><b>{!invtRole.roleName}</b></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!IF(invtRole.isNameRow = false,true,false)}">{!invtRole.roleName}</apex:outputPanel>
+                                                            </td>
+                                                            <td align="right">
+                                                                <apex:outputPanel rendered="{!IF(invtRole.isNameRow = false,true,false)}">
+                                                                    <apex:inputCheckbox style="display:inline;position:relative;left:0px;" value="{!invtRole.isRoleChecked}" onChange="countChecked()" rendered="{!IF(invtRole.isNameRow = false,true,false)}" disabled="{!invtRole.disableRole}"/>
+                                                                </apex:outputPanel>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <hr color="#B2B2B2">
+                                                    </hr>
+                                                </apex:repeat>
+                                            </apex:repeat>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="hideError();" value="Close"/>
+                                        <apex:commandButton id="saveRole" styleClass="btn btn-primary primary-btn" html-data-dismiss="modal" onclick="sendInvListUpdateRequest();" value="Save"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:form>
+                <!-- userRoleModal2 for edit user roles when product SPLUNK LIGHT -->
+                <apex:form id="invRolePopUp_light">
+                    <apex:outputPanel id="userRolePopUp_light">
+                        <div class="modal in" id="userRoleModal2" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog" aria-labelledby="userRoleModalLabel" aria-hidden="false">
+                            <div style="height: auto;" class="modal-backdrop fade in"> </div>
+                            <div class="modal-dialog modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:commandButton style="margin-top:-10px;" styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="hideError();" value="×"/>
+                                        <h4 class="modal-title" id="userRoleModalLabelM"><b></b></h4>
+                                    </div>
+                                    <div id = "roleError" style="display:none">
+                                        <br/>
+                                        <center>
+                                            <apex:outputLabel style="color:red" value="Atleast 1 role is required" />
+                                        </center>
+                                    </div>
+                                    <div class="modal-body" style="margin-top: 20px;">
+                                        <apex:actionFunction name="sendInvListUpdateLoading1" onComplete="window.location.reload(true)" action="{!updateInvtRolesPerPopUpOnSave}" />
+                                        <apex:outputPanel id="tableDivUserRole1">
+                                            <apex:repeat id="rep3" value="{!inviteeRolesPopUpDataList}" var="invtRolesData">
+                                                <apex:repeat id="rep4" value="{!invtRolesData.invtRoleListPopUpWrapperList}" var="invtRole">
+                                                    <table width="100%" style="table-layout:fixed; word-wrap:break-word">
+                                                        <col width="50%"/>
+                                                        <col width="50%"/>
+                                                        <tr style="height: 40px;">
+                                                            <td align="left">
+                                                                <apex:outputPanel rendered="{!invtRole.isNameRow}"><b>{!invtRole.roleName}</b></apex:outputPanel>
+                                                                <apex:outputPanel rendered="{!IF(invtRole.isNameRow = false,true,false)}">{!invtRole.roleName}</apex:outputPanel>
+                                                            </td>
+                                                            <td align="right">
+                                                                <apex:outputPanel rendered="{!IF(invtRole.isNameRow = false,true,false)}">
+                                                                    <apex:inputCheckbox id="looped" style="display:inline;position:relative;left:0px;" value="{!invtRole.isRoleChecked}" onChange="countChecked()" onclick="enableDisable(this)" rendered="{!IF(invtRole.isNameRow = false,true,false)}"/>
+                                                                </apex:outputPanel>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <hr color="#B2B2B2">
+                                                    </hr>
+                                                </apex:repeat>
+                                            </apex:repeat>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="hideError();" value="Close"/>
+                                        <apex:commandButton id="saveRole" styleClass="btn btn-primary primary-btn" html-data-dismiss="modal" onclick="sendInvListUpdateRequest1();" value="Save"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </apex:outputPanel>
+                </apex:form>
+                <!-- userRoleModal2 close -->
+                <apex:outputPanel id="modalOP">
+                    <div class="modal in" id="modalWindow" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="false">
+                        <div style="height: 1000px;" class="modal-backdrop fade in"> </div>
+                        <div class="modal-dialog  modal-popup-window">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <apex:form id="buttonform1">
+                                        <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="return null;" value="×"/>
+                                    </apex:form>
+                                    <h4 class="modal-title" id="modalLabel">Invite to Splunk</h4>
+                                </div>
+                                <div class="select-plan-period" role="tabpanel">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active"><a href="#email-invite" role="tab" data-toggle="tab">Email an invite</a></li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                            <apex:form id="inviteeEmailPopUp">
+                                                <apex:actionFunction name="refreshWindowBack" reRender="invitePanel"/>
+                                                <apex:actionFunction name="sendEmailRequestLoading" onComplete="{!IF(roleNulError = true, 'showRoleNullPopup();', IF((preAcceptedInvite = true), 'showPopup();', IF((inviteStatusInitiated = true), 'showInitiatedPopup();', IF((expiredInvite = true), 'showExpiredPopup();', IF((invalidEmailAddError = true), 'showPopupSameAddress();', IF((ownerEmailAddress = true), 'showPopupOwnerAddress()' , IF(invitationNotSentError = true, 'showNoInvitePopup()', 'window.location.reload(true);')))))))}" reRender="errMsg" action="{!sendAction}"/>
+                                                <apex:outputPanel id="invitePanel">
+                                                    <label>Invite</label>
+                                                    <div class="text-field-pos">
+                                                        <apex:inputText styleClass="text-field text-field-large text-field-default" id="inviteeEmailAddress" alt="inviteeEmailAddress" html-placeholder="Invitee Email Address" value="{!toEmailAddress}" required="true"/>
+                                                        <span class="error_msg"></span>
+                                                    </div>
+                                                    <label>Instance</label>
+                                                    <div class="text-field-pos">
+                                                        <apex:inputText styleClass="text-field text-field-large text-field-default" value="{!invInstanceName}" disabled="true"/>
+                                                    </div>
+                                                    <label>Role</label>
+                                                    <div class="text-field-pos">
+                                                        <apex:selectList id="instanceRoleList" size="1" styleClass="form-control" value="{!roleSelected}">
+                                                            <apex:selectOptions value="{!instRolesOptions}"/>
+                                                        </apex:selectList>
+                                                    </div>
+                                                    <label>Message</label>
+                                                    <div class="text-field-pos">
+                                                        <apex:inputTextarea styleClass="form-control text-field" id="textarea" rows="5" html-placeholder="{!helpTextinPlaceHolder}" value="{!message}"/>
+                                                        <span class="error_msg" style="top: 133px;"></span>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="return null;" value="Close"/>
+                                                        <apex:commandButton id="email-invite-submit-button" html-data-dismiss="modal" styleClass="btn btn-primary tertiary-btn" value="Send" onclick="sendEmailRequest();" disabled="true"/>
+                                                    </div>
+                                                </apex:outputPanel>
+                                            </apex:form>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane fade" id="get-invite">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </apex:outputPanel>
+                <!--modalWindow_Error for Error -->
+                <apex:outputPanel id="modalError">
+                    <div class="PopupPanel" style="width:0px;">
+                        <div class="modal in" id="modalWindow_Error" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="false">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"> </div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header" >
+                                        <apex:form id="buttonform_Error">
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="return null;" value="×"/>
+                                        </apex:form>
+                                        <h4 class="modal-title" id="modalLabel">Limit Exceeded</h4>
+                                    </div>                                
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                                <apex:form id="inviteeEmailPopUp_Error">
+                                                    <label>You have exceeded the maximum number Cloud Stack Invitee</label>
+                                                    <br></br>
+                                                    <label>Kindly delete existing invitees to send new invitation</label>
+                                                    <div class="modal-footer">
+                                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" onclick="return null;" value="Close"/>
+                                                    </div>
+                                                </apex:form>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane fade" id="get-invite">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                </apex:outputPanel>
+                <!-- modalWindow_Error for Error close -->
+                <div id="pDiv2" style="display:none;">
+                    <div class="popupBackground2" />
+                    <div class="PopupPanel" style="width:0px;">
+                        <div  class="fade in" id="modalWindowUpgrade" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:form id="buttonform">
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUpgradeMsg();" value="×" onComplete=""/>
+                                        </apex:form>
+                                        <h4 class="modal-title" id="modalLabel">Before you Upgrade</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                                <apex:form id="upgradePopUp">
+                                                    <apex:inputHidden id="instTrial" value="{!clickedStackId}" />
+                                                    <apex:outputPanel id="upgradePanel">
+                                                        <label>Please note that any scheduled jobs will fail during the upgrade. Depending on the plan size, upgrades can take around 5 minutes.</label>
+                                                        <br/>
+                                                        <label>After your upgrade has been completed, we'll send you an email when it's ready for use. Thanks!</label>
+                                                        <div class="modal-footer">
+                                                            <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Cancel" onclick="closeUpgradeMsg();" onComplete=""/>
+                                                            <apex:commandButton id="move-to-upgrade-page" styleClass="btn btn-primary primary-btn" value="Accept" action="{!redirectToUpgradeFlow}" />
+                                                        </div>
+                                                    </apex:outputPanel>
+                                                </apex:form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End upgrade popup-->
+                <!-- NewUpgrade Popup Start-->
+                <div id="pDiv5" style="display:none;">
+                    <div class="popupBackground2" />
+                    <div class="PopupPanel" style="width:0px;">
+                        <div  class="fade in" id="modalWindowNewUpgrade" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:form id="buttonformNewUpgrade">
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUpgradeMsg();" value="×" onComplete=""/>
+                                        </apex:form>
+                                        <h4 class="modal-title" id="modalLabel">Before you Upgrade</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                                <apex:form id="newUpgradePopUp">
+                                                    <apex:inputHidden id="instPaid" value="{!clickedStackId}"/>                                                
+                                                    <label>Please note that any scheduled jobs will fail during the upgrade. Depending on the plan size, upgrades can take around 5 minutes.</label>
+                                                    <br/>
+                                                    <label>After your upgrade has been completed, we'll send you an email when it's ready for use. Thanks!</label>
+                                                    <div class="modal-footer">
+                                                        <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Cancel" onclick="closeUpgradeMsg();" onComplete=""/>
+                                                        <apex:commandButton id="move-to-upgrade-page" styleClass="btn btn-primary primary-btn" value="Accept" action="{!redirectToNewUpgradeFlow}" />
+                                                    </div>                                               
+                                                </apex:form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- NewUpgrade Popup Close-->
+                <div id="pDiv3" style="display:none;">
+                    <div class="popupBackground2" />
+                    <div class="PopupPanel" style="width:0px;">
+                        <div  class="fade in" id="modalWindowDelete" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:form >
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" value="×" onComplete=""/>
+                                        </apex:form>
+                                        <apex:outputPanel id="InviteePanel">
+                                            <h4 id="deleteHead" class="modal-title"></h4>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" >
+                                                <label>{!$Label.RMEC_DeleteUserLabel1}</label>
+                                                <br/>
+                                                <label>{!$Label.RMEC_DeleteUserLabel2}</label>
+                                                <div class="modal-footer">
+                                                    <apex:form >
+                                                        <apex:inputHidden id="deleteInvId" value="{!clickedInviteeIdToDeactivate}"/>
+                                                        <apex:outputPanel id="InviteeButtonPanel">
+                                                            <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Cancel" onclick="showHide();" onComplete=""/>
+                                                            <apex:commandButton id="refresh-page" styleClass="btn btn-primary primary-btn" value="Accept" onClick="$('[id$=pDiv3]').hide();$('[id$=pDiv]').show();" action="{!deleteInvite}" onComplete="window.location.reload(true);"/>
+                                                            <!-- <apex:param name="deleteInviteId" assignto="{!clickedInviteeIdToDeactivate}" value="{!clickedInviteeIdToDeactivate}"></apex:param>
+                                                            </apex:commandButton> -->
+                                                        </apex:outputPanel>
+                                                    </apex:form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pDiv6" style="display:none;">
+                    <div class="popupBackground2" />
+                    <div class="PopupPanel" style="width:0px;">
+                        <div  class="fade in" id="modalWindowResendEmail" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:form >
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" value="×" onComplete=""/>
+                                        </apex:form>
+                                        <apex:outputPanel id="ResendeMailPanel">
+                                            <h4 class="modal-title" >Resend Invite</h4>
+                                        </apex:outputPanel>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content" style="position: relative; top:20px !important;">
+                                            <div role="tabpanel" class="tab-pane fade in active" >
+                                                <apex:outputText >Are you sure you want to resend the invite to this user ?</apex:outputText>
+                                                <div class="modal-footer">
+                                                    <apex:form >
+                                                        <apex:outputPanel id="ResendButtonPanel">
+                                                            <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Cancel" onclick="showHide();" onComplete=""/>
+                                                            <apex:commandButton id="refresh-page" styleClass="btn btn-primary primary-btn" value="Accept" onClick="$('[id$=pDiv6]').hide();$('[id$=pDiv]').show();" action="{!resendAction}" onComplete="{!IF(preAcceptedInvite = true, 'showPopup()' , 'window.location.reload(true);')}">
+                                                                <apex:param name="deleteInviteId" assignto="{!clickedInviteeId}" value="{!clickedInviteeId}"></apex:param>
+                                                            </apex:commandButton>
+                                                        </apex:outputPanel>
+                                                    </apex:form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pDiv4" style="display:none;">
+                    <div class="popupBackground2" />
+                    <div class="PopupPanel" style="width:0px;">
+                        <div  class="fade in" id="modalWindowDelete2" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                            <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                            <div class="modal-dialog  modal-popup-window">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <apex:form >
+                                            <apex:commandButton styleClass="close custClose" html-data-dismiss="modal" html-aria-label="Close" onclick="showHide();" value="×" onComplete=""/>
+                                        </apex:form>
+                                        <h4 class="modal-title" >Delete Invitation</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane fade in active" >
+                                                <apex:outputPanel id="InviteePanel2">
+                                                    <label id="deleteMess" style="margin-bottom: 20px;"></label>
+                                                </apex:outputPanel>
+                                                <br/>
+                                                <div class="modal-footer">
+                                                    <apex:form >
+                                                        <apex:outputPanel id="InviteeButtonPanel2">
+                                                            <apex:inputHidden id="deleteInvId2" value="{!clickedInviteeIdToDeactivate}" />
+                                                            <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="Cancel" onclick="showHide();" onComplete=""/>
+                                                            <apex:commandButton id="refresh-page" styleClass="btn btn-primary primary-btn" value="Accept" onClick="$('[id$=pDiv4]').hide();$('[id$=pDiv]').show();" action="{!deleteInviteBeforeAccept}" onComplete="window.location.reload(true);"/>
+                                                            <!--  <apex:param name="deleteInviteId" assignto="{!clickedInviteeIdToDeactivate}" value="{!clickedInviteeIdToDeactivate}"></apex:param>
+                                                            </apex:commandButton> -->
+                                                        </apex:outputPanel>
+                                                    </apex:form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="pDiv" style="display:none;">
+                    <div class="popupBackground" />
+                    <div class="PopupPanel">
+                        <div class="loadImage">
+                            <apex:image height="80px" url="{!URLFOR($Resource.RMEC_DesignResource,'images/loading.gif')}"/>
+                        </div>
+                        <div class="loadText">
+                            <apex:outputText value="Loading..." styleClass="payment-processing-text" />
+                            <br/>
+                            <apex:outputText value="Please do not refresh" styleClass="doNotRefreshText" />
+                        </div>
+                    </div>
+                </div>
+            </body>
+        </apex:outputPanel>
+        <apex:outputPanel layout="none" rendered="{!isDPL}">
+            <div style="padding:20px;width:100%;margin-top: 80px;">
+                <div class="alert alert-danger" role="alert">
+                    <apex:outputText styleClass="errorHeader" value="{!$Label.EC_DPL_ERROR_HEADER}<br/>" escape="false"/>
+                    <div style="margin-left:25px;">
+                        <br/>
+                    <!--START BIZ-1570 -->
+                    <apex:outputText value="{!$Label.EC_DPL_ERROR_MESSAGE}"/>
+                    <br/><br/>
+                    <apex:outputText value="{!$Label.EC_DPL_ERROR_FOOTER}"/>
+                    <!--END BIZ-1570 -->
+                </div>
+                </div>
+            </div>
+        </apex:outputPanel>
+    <!--Added as a part of BIZ-1163 (Self Service License Reset)-->
+    <!--BEGIN-->
+    <apex:outputPanel >
+        <div id="unlock_modal" style="display:none;">
+            <div class="popupBackground2" />
+            <div class="PopupPanel" style="width:0px;">
+                <div  class="fade in" id="modalLicenseUnlock" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                    <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                    <div class="modal-dialog  modal-popup-window">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <apex:form id="buttonFormLicenseUnlockClose">
+                                    <apex:commandButton styleClass="close custClose" style="color:#000 !important;" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUnlockPopup();" value="×"/>
+                                </apex:form>
+                                <h4 class="modal-title" id="modalLabel" style="font-weight:bold !important;">Are you sure that you want to unlock Splunk?</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                        <apex:form id="licenseUnlockPopup">
+                                            <apex:inputHidden id="instPaid" value="{!instanceId}"/>
+                                            <label>Are you sure that you want to unlock Splunk? You're allowed to use this feature <span class="unlock_total"/> times every <span class="unlock_period"/> days. If you have any questions about how unlocking works, <a href="{!unlock_URL}" style="cursor: pointer;" target="_blank"> click here</a>.</label>
+                                            <br/>
+                                            <label>You have <span class="unlock_left"/> unlocks left within your <span class="unlock_period"/> day period.</label>
+                                            <br/>
+                                            <label>Click the unlock button below to continue or <a href="{!contact_URL}" style="cursor: pointer;" target="_blank">contact sales</a> if you have any questions.</label>
+                                            <div class="modal-footer">
+                                                <!--GIF Loading-->
+                                                <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="CANCEL" onclick="closeUnlockPopup();" onComplete=""/>
+                                                <!--<apex:commandButton id="proceed-to-unlock" styleClass="btn btn-primary primary-btn" value="UNLOCK" action="{!resetLicense}" onComplete="window.location.reload(true);"/>-->
+                                                <apex:commandButton id="proceed-to-unlock" styleClass="btn btn-primary primary-btn" value="UNLOCK" onClick="resetLicenseMethodPopup();" onComplete=""/>
+                                                <apex:actionFunction name="resetLicenseMethodCall" onComplete="showUnlockStatusPopup11();" rerender="licenseUnlockMethod" action="{!resetLicense}" />
+                                            </div>
+                                        </apex:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="no_unlocks_modal" style="display:none;">
+            <div class="popupBackground2" />
+            <div class="PopupPanel" style="width:0px;">
+                <div  class="fade in" id="modalLicenseUnlock" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                    <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                    <div class="modal-dialog  modal-popup-window">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <apex:form id="buttonFormLicenseUnlockClose_NoLeft">
+                                    <apex:commandButton styleClass="close custClose" style="color:#000 !important;" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUnlockPopup();" value="×"/>
+                                </apex:form>
+                                <h4 class="modal-title" id="modalLabel" style="font-weight:bold !important;">Please contact our Support Team</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                        <apex:form id="noLicenseUnlockPopup">
+                                            <apex:inputHidden id="instPaid" value="{!instanceId}"/>
+                                            <label>
+                                                Sorry, it looks like you don't have any unlock capabilities remaining in this <span class="no_unlock_period"/> day period.
+                                            </label>
+                                            <br/>
+                                            <label>
+                                                Please contact our <a href="{!contact_URL}" style="cursor: pointer;" target="_blank">support team</a> for more help or wait until 
+                                                <span class="no_unlock_date" />
+                                                to use this feature. For more information regarding our unlock feature, <a href="{!unlock_URL}" style="cursor: pointer;" target="_blank">click here</a>.
+                                            </label>
+                                            <br/>
+                                            <div class="modal-footer">
+                                                <apex:commandButton styleClass="btn btn-primary tertiary-btn" html-data-dismiss="modal" value="CANCEL" onclick="closeUnlockPopup();" onComplete=""/>
+                                                <!-- <apex:commandButton id="proceed-to-unlock" styleClass="btn btn-primary primary-btn" value="UNLOCK" action="{!resetLicense}"/> -->
+                                            </div>
+                                        </apex:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="unlock_success_modal" style="display:none;">
+            <div class="popupBackground2" />
+            <div class="PopupPanel" style="width:0px;">
+                <div  class="fade in" id="modalLicenseUnlock" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                    <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                    <div class="modal-dialog  modal-popup-window">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <apex:form id="unlock_license_success">
+                                    <apex:commandButton styleClass="close custClose" style="color:#000 !important;" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUnlockPopup();" value="×"/>
+                                </apex:form>
+                                <h4 class="modal-title" id="modalLabel" style="font-weight:bold !important;">Success</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                        <apex:form id="unlock_license_success_popup">
+                                            <apex:inputHidden id="instPaid" value="{!instanceId}"/>
+                                            <label>
+                                                Your Instance has been unlocked !
+                                            </label>
+                                            <br/>
+                                            <div class="modal-footer">
+                                                <apex:commandButton styleClass="btn btn-primary primary-btn" html-data-dismiss="modal" value="CLOSE" oncomplete="window.location.reload(true);"/>
+                                                <!-- <apex:commandButton id="proceed-to-unlock" styleClass="btn btn-primary primary-btn" value="UNLOCK" action="{!resetLicense}"/> -->
+                                            </div>
+                                        </apex:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="unlock_error_modal" style="display:none;">
+            <div class="popupBackground2" />
+            <div class="PopupPanel" style="width:0px;">
+                <div  class="fade in" id="modalLicenseUnlock" role="dialog" tabindex="-1" aria-labelledby="modalLabel">
+                    <div style="height: 1000px;" class="modal-backdrop fade in"></div>
+                    <div class="modal-dialog  modal-popup-window">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <apex:form id="unlock_license_error">
+                                    <apex:commandButton styleClass="close custClose" style="color:#000 !important;" html-data-dismiss="modal" html-aria-label="Close" onclick="closeUnlockPopup();" value="×"/>
+                                </apex:form>
+                                <h4 class="modal-title" id="modalLabel" style="font-weight:bold !important;">Error</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade in active" id="email-invite">
+                                        <apex:form id="unlock_license_error_popup">
+                                            <apex:inputHidden id="instPaid" value="{!instanceId}"/>
+                                            <label>
+                                                There has been an error with your request. Please try again or contact customer support.
+                                            </label>
+                                            <br/>
+                                            <div class="modal-footer">
+                                                <apex:commandButton styleClass="btn btn-primary primary-btn" html-data-dismiss="modal" value="CLOSE" onclick="window.location.reload(true);"/>
+                                                <!-- <apex:commandButton id="proceed-to-unlock" styleClass="btn btn-primary primary-btn" value="UNLOCK" action="{!resetLicense}"/> -->
+                                            </div>
+                                        </apex:form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>     
+       </apex:outputPanel>
+    <!--BIZ-1163 END-->
+        <c:RMEC_FooterInformationComponent ></c:RMEC_FooterInformationComponent>
+        <!-- BIZ-2953 - Google Tag Manager -->
+        <noscript><iframe src="//www.googletagmanager.com/ns.html?id={!$Label.GTM_ACCOUNT_ID}" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
+        <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{!$Label.GTM_ACCOUNT_ID}');
+        </script>
+    <!-- BIZ-2953 - End Google Tag Manager -->
+    </apex:page>
